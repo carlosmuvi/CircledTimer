@@ -16,7 +16,11 @@ import kotlin.properties.Delegates
 /**
  * Created by Carlos on 15/09/2015.
  */
-public class CircleTimer : View {
+public class CircledTimer : View {
+
+    //state
+    enum class State { NOT_STARTED, RUNNING, PAUSED, FINISHED }
+    var currentState = State.NOT_STARTED
 
     //timing
     val totalTimeSeconds = 1
@@ -37,7 +41,7 @@ public class CircleTimer : View {
     val channelWidth = 7.5f
     val circleRadius = 15f
     val textSize = 150f
-    val channelRadius : Float by Delegates.lazy {
+    val channelRadius: Float by Delegates.lazy {
         Math.min(getHeight() / 2.0F, getWidth() / 2.0F) - (circleRadius)
     }
 
@@ -75,9 +79,9 @@ public class CircleTimer : View {
         //read styleable attributes
         if (attrs != null) {
             var attributes = getContext().getTheme()
-                    .obtainStyledAttributes(attrs, R.styleable.CircleTimer, 0, 0);
-            flowColor = attributes.getColor(R.styleable.CircleTimer_flowColor, flowColor)
-            channelColor = attributes.getColor(R.styleable.CircleTimer_channelColor, channelColor)
+                    .obtainStyledAttributes(attrs, R.styleable.CircledTimer, 0, 0);
+            flowColor = attributes.getColor(R.styleable.CircledTimer_flowColor, flowColor)
+            channelColor = attributes.getColor(R.styleable.CircledTimer_channelColor, channelColor)
             attributes.recycle()
         }
 
@@ -121,14 +125,32 @@ public class CircleTimer : View {
      * PUBLIC FUNCTIONS
      */
     fun startTimer() {
-        timer.startTimer()
+        when (currentState) {
+            State.RUNNING, State.FINISHED -> {
+                //do nothing, already started
+            }
+            State.NOT_STARTED, State.PAUSED -> {
+                currentState = State.RUNNING
+                timer.startTimer()
+            }
+        }
     }
 
     fun stopTimer() {
-        timer.stopTimer()
+        when (currentState) {
+            State.RUNNING -> {
+                timer.stopTimer()
+                currentState = State.PAUSED
+            }
+            else -> {
+                //do nothing, already stopped
+            }
+        }
     }
 
+
     fun resetTimer() {
+        //TODO check state
         timer.resetTimer()
     }
 
