@@ -88,6 +88,7 @@ public class CircledTimer : View {
         with(flowPaint) {
             setStrokeWidth(channelWidth + 1)
             setColor(flowColor)
+            setAntiAlias(true)
             setStyle(Paint.Style.STROKE)
             setStrokeJoin(Paint.Join.ROUND)
         }
@@ -96,6 +97,7 @@ public class CircledTimer : View {
         with(channelPaint) {
             setStrokeWidth(channelWidth)
             setStyle(Paint.Style.STROKE)
+            setAntiAlias(true)
             setColor(channelColor)
 
         }
@@ -103,6 +105,7 @@ public class CircledTimer : View {
         //circle init
         with(circlePaint) {
             setColor(flowColor)
+            setAntiAlias(true)
         }
 
         //text init
