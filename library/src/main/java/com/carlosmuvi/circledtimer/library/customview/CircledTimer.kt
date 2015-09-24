@@ -23,7 +23,7 @@ public class CircledTimer : View {
     var currentState = State.NOT_STARTED
 
     //timing
-    val totalTimeSeconds = 1
+    public var totalTimeSeconds: Int = 1
 
     private var timer: Timer by DelegatesExt
             .notNullSingleValue()
@@ -38,16 +38,18 @@ public class CircledTimer : View {
     private val center: Coord  by Delegates
             .lazy { Coord((getWidth() / 2).toFloat(), (getHeight() / 2).toFloat()) }
 
-    val channelWidth = 7.5f
-    val circleRadius = 15f
-    val textSize = 150f
+    public var channelWidth : Float = 7.5f
+    public var circleRadius : Float = 15f
+    public var textSize : Float = 150f
     val channelRadius: Float by Delegates.lazy {
         Math.min(getHeight() / 2.0F, getWidth() / 2.0F) - (circleRadius)
     }
 
     //Colors
-    private var channelColor = Color.BLACK
-    private var flowColor = Color.RED
+    public var channelColor: Int = Color.BLACK
+    public var flowColor: Int = Color.RED
+
+    public var onFinishListener : () -> Boolean = { true }
 
     //Flow Path
     private val flowPath = Path()
@@ -63,30 +65,20 @@ public class CircledTimer : View {
      */
 
     constructor(ctx: Context) : super(ctx) {
-        init()
+        getAttrs()
     }
 
     constructor(ctx: Context, attrs: AttributeSet) : super(ctx, attrs, 0) {
-        init(attrs)
+        getAttrs(attrs)
     }
 
     constructor(ctx: Context, attrs: AttributeSet, defStyle: Int) : super(ctx, attrs, defStyle) {
-        init(attrs)
+        getAttrs(attrs)
     }
 
-    private fun init(attrs: AttributeSet? = null) {
-
-        //read styleable attributes
-        if (attrs != null) {
-            var attributes = getContext().getTheme()
-                    .obtainStyledAttributes(attrs, R.styleable.CircledTimer, 0, 0);
-            flowColor = attributes.getColor(R.styleable.CircledTimer_flowColor, flowColor)
-            channelColor = attributes.getColor(R.styleable.CircledTimer_channelColor, channelColor)
-            attributes.recycle()
-        }
-
+    public fun build(){
         //setup timer (ticks every 10 milliseconds)
-        timer = Timer(10, totalTimeSeconds * 100L) {
+        timer = Timer(10, totalTimeSeconds * 100L, onFinishListener) {
             textValue = it.toMitsSecs()
             drawFlowPart()
             invalidate()
@@ -117,6 +109,18 @@ public class CircledTimer : View {
         with(textPaint) {
             setTextSize(textSize)
             setColor(flowColor)
+        }
+
+    }
+    private fun getAttrs(attrs: AttributeSet? = null) {
+
+        //read styleable attributes
+        if (attrs != null) {
+            var attributes = getContext().getTheme()
+                    .obtainStyledAttributes(attrs, R.styleable.CircledTimer, 0, 0);
+            flowColor = attributes.getColor(R.styleable.CircledTimer_flowColor, flowColor)
+            channelColor = attributes.getColor(R.styleable.CircledTimer_channelColor, channelColor)
+            attributes.recycle()
         }
 
     }
@@ -151,7 +155,14 @@ public class CircledTimer : View {
 
     fun resetTimer() {
         //TODO check state
-        timer.resetTimer()
+        if(currentState != State.NOT_STARTED){
+            currentState = State.NOT_STARTED
+            flowPath.reset()
+            textValue = "00:00:000"
+            flowCoordsIndex = 0
+            timer.resetTimer()
+            invalidate()
+        }
     }
 
     /**
