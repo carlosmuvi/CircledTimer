@@ -1,1 +1,6 @@
-Circled timer based on http://www.materialup.com/posts/clearfocus-pomodoro-timer-android-app, written in kotlin.
+Circled timer based on , written in kotlin.
+
+Credits
+----
+
+http://www.materialup.com/posts/clearfocus-pomodoro-timer-android-app
